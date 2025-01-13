@@ -133,52 +133,7 @@ public class ConexionMySql {
 			}
 	}
 
-	public boolean tipousarioad(JRadioButton rbAdministrador, String id_Usuario) {
-		this.conectar();
-		boolean boleano = false;
-		if(rbAdministrador.isSelected()) {
-			try {
-				resultado = stm.executeQuery("SELECT COUNT(*) FROM usuarios WHERE id_Usuario='"+id_Usuario+"' AND tipo = 'Administrador'");
-				if (resultado.next()) {
-					int count = resultado.getInt(1);
-					if (count == 1) {
-		                boleano = true;
-		            } else {
-		                boleano = false;
-		                JOptionPane.showMessageDialog(null,"No hay ningun administrador correspondiente a los datos introducidos","error",JOptionPane.ERROR_MESSAGE);
-		            }
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		return boleano;
-	}
 	
-	public boolean tipousuariomec(JRadioButton rbMecanico, String id_Usuario) {
-		this.conectar();
-		boolean boleano = false;
-		if(rbMecanico.isSelected()) {
-			try {
-				resultado = stm.executeQuery("SELECT COUNT(*) FROM usuarios WHERE id_Usuario='"+id_Usuario+"' AND tipo = 'Mecanico'");
-				if (resultado.next()) {
-					int count = resultado.getInt(1);
-					if (count == 1) {
-		                boleano = true;
-		            } else {
-		                boleano = false;
-		                JOptionPane.showMessageDialog(null,"No hay ningun mecánico correspondiente a los datos introducidos","error",JOptionPane.ERROR_MESSAGE);
-		            }
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
-		}
-		return boleano;
-	}
 	public String obtenerTipoUsuario(String id_usuario) {
 		this.conectar();
 	    String tipo = "";
