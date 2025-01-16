@@ -37,7 +37,18 @@ INSERT INTO `derrap`.`clientes` (`DNI`, `Nombre`, `Apellidos`, `Direccion`, `Tel
 (33445566, 'David', 'Ruiz', 'Paseo del Parque 22', '600444555', 'david.ruiz@gmail.com'),
 (77665544, 'Sara', 'Fernández', 'Carretera Central 56', '600666777', 'sara.fernandez@gmail.com'),
 (22334455, 'Jorge', 'Jiménez', 'Callejón Oscuro 13', '600888999', 'jorge.jimenez@gmail.com'),
-(88990011, 'Elena', 'Torres', 'Autovía del Sur KM 10', '600000111', 'elena.torres@gmail.com');
+(88990011, 'Elena', 'Torres', 'Autovía del Sur KM 10', '600000111', 'elena.torres@gmail.com'),
+('11224466', 'Pablo', 'García', 'Calle Nueva 12', '601123456', 'pablo.garcia@gmail.com'),
+('12348765', 'Lucía', 'Romero', 'Camino Viejo 8', '601987654', 'lucia.romero@gmail.com'),
+('22331144', 'Andrés', 'Santos', 'Avenida del Sol 15', '601222333', 'andres.santos@gmail.com'),
+('33446688', 'Marta', 'Navarro', 'Plaza del Carmen 5', '601444555', 'marta.navarro@gmail.com'),
+('44557799', 'Javier', 'Ortega', 'Calle Luna 20', '601666777', 'javier.ortega@gmail.com'),
+('55668800', 'Alba', 'Vargas', 'Carretera Nueva 3', '601888999', 'alba.vargas@gmail.com'),
+('66779911', 'Rafael', 'Crespo', 'Paseo de la Victoria 17', '601000111', 'rafael.crespo@gmail.com'),
+('77880022', 'Carmen', 'Castro', 'Callejón Bonito 22', '601333444', 'carmen.castro@gmail.com'),
+('88991133', 'Isabel', 'Moreno', 'Autovía Norte KM 12', '601555666', 'isabel.moreno@gmail.com'),
+('99002244', 'Sergio', 'Molina', 'Ronda Este 8', '601777888', 'sergio.molina@gmail.com');
+
 
 -- Datos para la tabla `vehiculos`
 INSERT INTO `derrap`.`vehiculos` (`Matricula`, `Modelo`, `Marca`, `anio`, `kmtotales`, `Clientes_DNI`) VALUES
@@ -84,19 +95,6 @@ INSERT INTO `derrap`.`orden_reparacion` (`ID_Orden`, `fecha_entrada`, `fecha_sal
 (4, '2025-01-13', '2025-01-15', 'Sin comenzar', 'Pendiente', '1213JKL', '5'),
 (5, '2025-01-14', '2025-01-16', 'En reparacion', 'Asignadas', '1415MNO', '6'),
 (6, '2025-01-15', '2025-01-17', 'En diagnostico', 'Pendiente', '1617PQR', '7');
-
--- Datos para la tabla `facturación`
-INSERT INTO `derrap`.`facturación` (`ID_Facturacion`, `precio`, `Metodo_pago`, `Orden_Reparacion_N_Orden`) VALUES
-(1, 150.0, 'Efectivo', 1),
-(2, 200.0, 'Tarjeta', 2),
-(3, 100.0, 'Efectivo', 3),
-(4, 250.0, 'Tarjeta', 4),
-(5, 175.0, 'Efectivo', 5),
-(6, 220.0, 'Tarjeta', 6),
-(7, 300.0, 'Efectivo', 7),
-(8, 130.0, 'Tarjeta', 8),
-(9, 190.0, 'Efectivo', 9),
-(10, 210.0, 'Tarjeta', 10);
 
 -- Datos for derrap.facturación
 INSERT INTO derrap.facturación (ID_Facturacion, precio, Metodo_pago, Orden_Reparacion_N_Orden) VALUES 

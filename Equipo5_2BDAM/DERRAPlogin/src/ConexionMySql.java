@@ -299,7 +299,51 @@ public class ConexionMySql {
 	            e.printStackTrace();
 	        }
 	        return vehiculos;
-	    }	    
+	    }
+	    
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+METODOS PARA INSERTAR CLIENTES++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    public boolean insertarCliente(String dni, String nombre, String apellidos, String direccion, String telefono, String email) {
+	        String sql = "INSERT INTO clientes (dni, nombre, apellidos, direccion, telefono, email) VALUES (?, ?, ?, ?, ?, ?)";
+	        try (Connection conn = this.conectar();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setString(1, dni);
+	            pstmt.setString(2, nombre);
+	            pstmt.setString(3, apellidos);
+	            pstmt.setString(4, direccion);
+	            pstmt.setString(5, telefono);
+	            pstmt.setString(6, email);
+	            pstmt.executeUpdate();
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	 // Método en la clase ConexionMySql para actualizar el cliente
+	    public boolean actualizarCliente(String nombre, String apellidos, String direccion, String telefono, String email, String dni) {
+	        try (Connection con = this.conectar();
+	             PreparedStatement ps = con.prepareStatement(
+	                 "UPDATE clientes SET Nombre = ?, Apellidos = ?, Direccion = ?, Telefono = ?, Email = ? WHERE DNI = ?")) {
+	            ps.setString(1, nombre);
+	            ps.setString(2, apellidos);
+	            ps.setString(3, direccion);
+	            ps.setString(4, telefono);
+	            ps.setString(5, email);
+	            ps.setString(6, dni); // El DNI debe seleccionarse previamente
+	            ps.executeUpdate();
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+
 	}
 
 
