@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -133,6 +134,7 @@ public class login extends JFrame {
                     } else if ("Mecanico".equalsIgnoreCase(tipoUsuario)) {
                         paginaprincipalmec paginaprincipalmec = new paginaprincipalmec();
                         paginaprincipalmec.setVisible(true);
+                        paginaprincipalmec.mostrarOrdenes();
                         dispose();
                     } else {
                         JOptionPane.showMessageDialog(btnInicioSesion, "Tipo de usuario desconocido", "Error", JOptionPane.ERROR_MESSAGE);
@@ -183,5 +185,23 @@ public class login extends JFrame {
         btnNewButton.setBounds(665, 366, 100, 25);
         btnNewButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         contentPane.add(btnNewButton);
+        
+        
+        //Eventos de teclado para el login 
+        txtUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    btnInicioSesion.doClick(); 
+                }
+            }
+        });
+
+        pwClave.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                    btnInicioSesion.doClick(); 
+                }
+            }
+        });
     }
 }

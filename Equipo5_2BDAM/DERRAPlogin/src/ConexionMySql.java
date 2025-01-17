@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -326,19 +327,14 @@ public class ConexionMySql {
 	        }
 	    }
 	 // Método en la clase ConexionMySql para actualizar el cliente
-	    public boolean actualizarCliente(String nombre, String apellidos, String direccion, String telefono, String email, String dni) {
-	        try (Connection con = this.conectar();
-	             PreparedStatement ps = con.prepareStatement(
-	                 "UPDATE clientes SET Nombre = ?, Apellidos = ?, Direccion = ?, Telefono = ?, Email = ? WHERE DNI = ?")) {
-	            ps.setString(1, nombre);
-	            ps.setString(2, apellidos);
-	            ps.setString(3, direccion);
-	            ps.setString(4, telefono);
-	            ps.setString(5, email);
-	            ps.setString(6, dni); // El DNI debe seleccionarse previamente
+	    public boolean actualizarCliente(String dni, String camposeleccionado, String nuevovalor) {
+	        String sql = "UPDATE clientes SET " + camposeleccionado + " = ? WHERE DNI = ?";
+	        try (Connection con = this.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+	            ps.setString(1, nuevovalor); // Asignar el nuevo valor
+	            ps.setString(2, dni);        // Asignar el DNI
 	            ps.executeUpdate();
 	            return true;
-	        } catch (Exception e) {
+	        } catch (SQLException e) {
 	            e.printStackTrace();
 	            return false;
 	        }
@@ -373,7 +369,212 @@ public class ConexionMySql {
 
 	        return clientes; // Devuelve la lista de clientes (vacía si no se encontró ninguno)
 	    }
+	  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+METODOS PARA INSERTAR Mecanico++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    public boolean insertarMecanico(String dni, String nombre, String clave, String email) {
+	    	String tipo = "Mecanico";
+	    
+	        String sql = "INSERT INTO usuarios (ID_usuario, nombre, clave, tipo, email) VALUES (?, ?, ?, ?, ?)";
+	        try (Connection conn = this.conectar();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setString(1, dni);
+	            pstmt.setString(2, nombre);
+	            pstmt.setString(3, clave);
+	            pstmt.setString(4, tipo);
+	            pstmt.setString(5, email);
+	            pstmt.executeUpdate();
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	 // Método en la clase ConexionMySql para actualizar el cliente
+	    public boolean actualizarMecanico(String ID_usuario, String camposeleccionado, String nuevovalor) {
+	        String sql = "UPDATE usuarios SET " + camposeleccionado + " = ? WHERE ID_Usuario = ?";
+	        try (Connection con = this.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+	            ps.setString(1, nuevovalor); // Asignar el nuevo valor
+	            ps.setString(2, ID_usuario);        // Asignar el ID_usuario
+	            ps.executeUpdate();
+	            return true;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	    public ArrayList<String[]> buscarMecanicoPorDNI(String dni) {
+	        this.conectar();
+	        ArrayList<String[]> usuarios = new ArrayList<>();   
+	        String sql = "SELECT * FROM usuarios WHERE ID_usuario = ?";
 
+	        try (PreparedStatement stm = cn.prepareStatement(sql)) {
+	            // Establecer el parámetro del DNI en la consulta
+	            stm.setString(1, dni);
+
+	            // Ejecutar la consulta
+	            try (ResultSet resultado = stm.executeQuery()) {
+	                while (resultado.next()) {
+	                    // Crear un array con los datos del cliente y agregarlo a la lista
+	                    String[] usuario = new String[3];
+	                    usuario[0] = resultado.getString("clave");
+	                    usuario[1] = resultado.getString("nombre");
+	                    usuario[2] = resultado.getString("email");
+	                    usuarios.add(usuario);
+	                }
+	            }
+	        } catch (SQLException ex) {
+	            System.err.println("Error al buscar el cliente por DNI: " + ex.getMessage());
+	        }
+
+	        return usuarios; // Devuelve la lista de clientes (vacía si no se encontró ninguno)
+	    }
+	  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+METODOS PARA INSERTAR CLIENTES++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	    public boolean insertarVehiculo(String matricula, String modelo, String marca, String anio, String kmtotales, String dnicliente) {
+	        String sql = "INSERT INTO vehiculos (matricula, modelo, marca, anio, kmtotales, clientes_dni) VALUES (?, ?, ?, ?, ?, ?)";
+	        try (Connection conn = this.conectar();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            pstmt.setString(1, matricula);
+	            pstmt.setString(2, modelo);
+	            pstmt.setString(3, marca);
+	            pstmt.setString(4, anio);
+	            pstmt.setString(5, kmtotales);
+	            pstmt.setString(6, dnicliente);
+	            pstmt.executeUpdate();
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	    public ArrayList<String[]> buscarVehiculoPorMatricula(String matricula) {
+	        this.conectar();
+	        ArrayList<String[]> vehiculos = new ArrayList<>();   
+	        String sql = "SELECT * FROM vehiculos WHERE Matricula = ?";
+
+	        try (PreparedStatement stm = cn.prepareStatement(sql)) {
+	            // Establecer el parámetro del DNI en la consulta
+	            stm.setString(1, matricula);
+
+	            // Ejecutar la consulta
+	            try (ResultSet resultado = stm.executeQuery()) {
+	                while (resultado.next()) {
+	                    // Crear un array con los datos del cliente +y agregarlo a la lista
+	                    String[] vehiculo = new String[5];
+	                    vehiculo[0] = resultado.getString("modelo");
+	                    vehiculo[1] = resultado.getString("marca");
+	                    vehiculo[2] = resultado.getString("anio");
+	                    vehiculo[3] = resultado.getString("kmtotales");
+	                    vehiculo[4] = resultado.getString("Clientes_DNI");
+	                    vehiculos.add(vehiculo);
+	                }
+	            }
+	        } catch (SQLException ex) {
+	            System.err.println("Error al buscar el vehiculo por matricula: " + ex.getMessage());
+	        }
+
+	        return vehiculos; // Devuelve la lista de clientes (vacía si no se encontró ninguno)
+	    }
+	    public ArrayList<String[]> buscarVehiculoPorMatricula2(String matricula) {
+	        ArrayList<String[]> vehiculos = new ArrayList<>();
+	        String sql = "SELECT marca, matricula, modelo, anio, kmtotales, Clientes_DNI FROM vehiculos WHERE matricula = ?"; // Asegúrate de tener un ? en la consulta
+
+	        try (Connection conn = this.conectar();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            
+	            // Establecer la matrícula como parámetro de la consulta
+	            pstmt.setString(1, matricula);  // El índice debe ser 1 ya que estamos usando un solo parámetro
+	            
+	            // Ejecutar la consulta
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                // Verificar si hay resultados
+	                if (rs.next()) {
+	                    // Crear un array con los detalles del vehículo
+	                    String[] vehiculo = new String[6];
+	                    vehiculo[0] = rs.getString("marca");     // Marca
+	                    vehiculo[1] = rs.getString("matricula"); // Matrícula
+	                    vehiculo[2] = rs.getString("modelo");    // Modelo
+	                    vehiculo[3] = rs.getString("anio");      // Año
+	                    vehiculo[4] = rs.getString("kmtotales");
+	                    vehiculo[5] = rs.getString("Clientes_DNI");// Kilómetros totales
+
+	                    // Añadir el vehículo a la lista
+	                    vehiculos.add(vehiculo);
+	                }
+	            }
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+
+	        return vehiculos; // Devuelve la lista de vehículos encontrados (vacía si no se encontró ninguno)
+	    }
+
+	    public boolean actualizarVehiculo(String Matricula, String camposeleccionado, String nuevovalor) {
+	        String sql = "UPDATE vehiculos SET " + camposeleccionado + " = ? WHERE Matricula = ?";
+	        try (Connection con = this.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+	            ps.setString(1, nuevovalor); // Asignar el nuevo valor
+	            ps.setString(2, Matricula);        // Asignar el ID_usuario
+	            ps.executeUpdate();
+	            return true;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    
 	}
+	    public boolean eliminarVehiculo(String matricula) {
+	        String sql = "DELETE FROM vehiculos WHERE matricula = ?";
+	        try (Connection conn = this.conectar(); 
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	            
+	            pstmt.setString(1, matricula); // Eliminar vehículo por matrícula
+	            pstmt.executeUpdate();
+	            return true;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            return false;
+	        }
+	    }
+	    //
+	    //Metodo para obtener las ordenes de reparacion de cada mecanico
+	    //
+		public ArrayList<String[]> obtenerOrdenes() {
+			ArrayList<String[]> ordenes = new ArrayList<>();
+		    String query = "SELECT * FROM orden_reparacion LIMIT 3";
+
+		    try (Connection conn =this.conectar();
+		         Statement stmt = conn.createStatement();
+		         ResultSet rs = stmt.executeQuery(query)) {
+
+		        // Obtener los metadatos de las columnas
+		        ResultSetMetaData metaData = rs.getMetaData();
+		        int columnCount = metaData.getColumnCount();
+
+		        // Leer los datos de la tabla
+		        while (rs.next()) {
+		            String[] fila = new String[columnCount];
+		            for (int i = 1; i <= columnCount; i++) {
+		                fila[i - 1] = rs.getString(i);
+		            }
+		            ordenes.add(fila);
+		        }
+
+		    } catch (SQLException ex) {
+		        ex.printStackTrace();
+		    }
+			return ordenes;
+
+		}
+}
 
 
