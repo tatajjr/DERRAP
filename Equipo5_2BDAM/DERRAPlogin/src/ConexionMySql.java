@@ -343,6 +343,36 @@ public class ConexionMySql {
 	            return false;
 	        }
 	    }
+	    
+	    public ArrayList<String[]> buscarClientePorDNI(String dni) {
+	        this.conectar();
+	        ArrayList<String[]> clientes = new ArrayList<>();   
+	        String sql = "SELECT nombre, apellidos, direccion, telefono, email FROM clientes WHERE dni = ?";
+
+	        try (PreparedStatement stm = cn.prepareStatement(sql)) {
+	            // Establecer el parámetro del DNI en la consulta
+	            stm.setString(1, dni);
+
+	            // Ejecutar la consulta
+	            try (ResultSet resultado = stm.executeQuery()) {
+	                while (resultado.next()) {
+	                    // Crear un array con los datos del cliente y agregarlo a la lista
+	                    String[] cliente = new String[5];
+	                    cliente[0] = resultado.getString("nombre");
+	                    cliente[1] = resultado.getString("apellidos");
+	                    cliente[2] = resultado.getString("direccion");
+	                    cliente[3] = resultado.getString("telefono");
+	                    cliente[4] = resultado.getString("email");
+
+	                    clientes.add(cliente);
+	                }
+	            }
+	        } catch (SQLException ex) {
+	            System.err.println("Error al buscar el cliente por DNI: " + ex.getMessage());
+	        }
+
+	        return clientes; // Devuelve la lista de clientes (vacía si no se encontró ninguno)
+	    }
 
 	}
 

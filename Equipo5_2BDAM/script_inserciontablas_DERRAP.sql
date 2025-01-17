@@ -61,7 +61,27 @@ INSERT INTO `derrap`.`vehiculos` (`Matricula`, `Modelo`, `Marca`, `anio`, `kmtot
 ('1819STU', 'Fiesta', 'Ford', 2020, 15000, 33445566),
 ('2021VWX', 'Qashqai', 'Nissan', 2012, 90000, 77665544),
 ('2223YZA', 'Corsa', 'Opel', 2013, 85000, 22334455),
-('2425BCD', 'Clio', 'Renault', 2011, 95000, 88990011);
+('2425BCD', 'Clio', 'Renault', 2011, 95000, 88990011),
+('2627EFG', 'Auris', 'Toyota', 2017, 65000, 55667788),
+('2829HIJ', 'Leon', 'Seat', 2021, 20000, 12345678),
+('3031KLM', 'Passat', 'Volkswagen', 2018, 50000, 99887766),
+('3233NOP', 'Meriva', 'Opel', 2016, 72000, 44332211),
+('3435QRS', 'Kuga', 'Ford', 2019, 35000, 33445566),
+('3637TUV', 'Juke', 'Nissan', 2014, 85000, 77665544),
+('3839WXY', 'Kadjar', 'Renault', 2020, 30000, 22334455),
+('4041ZAB', 'Twingo', 'Renault', 2013, 87000, 88990011),
+('4243CDE', 'Mondeo', 'Ford', 2015, 68000, 87654321),
+('4445FGH', 'CR-V', 'Honda', 2019, 40000, 11223344),
+('4647IJK', 'Micra', 'Nissan', 2018, 52000, 55667788),
+('4849LMN', 'Polo', 'Volkswagen', 2021, 10000, 12345678),
+('5051OPQ', 'Zafira', 'Opel', 2017, 63000, 99887766),
+('5253RST', 'Focus', 'Ford', 2016, 75000, 44332211),
+('5455UVW', 'Captur', 'Renault', 2019, 32000, 33445566),
+('5657XYZ', 'Verso', 'Toyota', 2014, 89000, 77665544),
+('5859ABC', 'Q3', 'Audi', 2013, 94000, 22334455),
+('6061DEF', 'A3', 'Audi', 2018, 48000, 88990011),
+('6263GHI', 'Civic', 'Honda', 2020, 23000, 87654321),
+('6465JKL', 'Ibiza', 'Seat', 2021, 18000, 11223344);
 
 -- Datos para la tabla `cita`
 INSERT INTO `derrap`.`cita` (`ID_Cita`, `fecha_reparacion`, `Vehiculos_Matricula`) VALUES
@@ -85,7 +105,27 @@ INSERT INTO `derrap`.`usuarios` (`ID_Usuario`, `clave`, `email`, `tipo`, `nombre
 ('5', '5', 'mecanico5@derrap.com', 'Mecanico', 'Mecánico Cinco'),
 ('6', '6', 'mecanico6@derrap.com', 'Mecanico', 'Mecánico Seis'),
 ('7', '7', 'mecanico7@derrap.com', 'Mecanico', 'Mecánico Siete'),
-('8', '8', 'jaimepello@gmail.com', 'Mecanico', 'Jaime');
+('8', '8', 'jaimepello@gmail.com', 'Mecanico', 'Jaime'),
+('9', '9', 'mecanico9@derrap.com', 'Mecanico', 'Mecánico Nueve'),
+('10', '10', 'mecanico10@derrap.com', 'Mecanico', 'Mecánico Diez'),
+('11', '11', 'mecanico11@derrap.com', 'Mecanico', 'Mecánico Once'),
+('12', '12', 'mecanico12@derrap.com', 'Mecanico', 'Mecánico Doce'),
+('13', '13', 'mecanico13@derrap.com', 'Mecanico', 'Mecánico Trece'),
+('14', '14', 'mecanico14@derrap.com', 'Mecanico', 'Mecánico Catorce'),
+('15', '15', 'mecanico15@derrap.com', 'Mecanico', 'Mecánico Quince'),
+('16', '16', 'mecanico16@derrap.com', 'Mecanico', 'Mecánico Dieciséis'),
+('17', '17', 'mecanico17@derrap.com', 'Mecanico', 'Mecánico Diecisiete'),
+('18', '18', 'mecanico18@derrap.com', 'Mecanico', 'Mecánico Dieciocho'),
+('19', '19', 'mecanico19@derrap.com', 'Mecanico', 'Mecánico Diecinueve'),
+('20', '20', 'mecanico20@derrap.com', 'Mecanico', 'Mecánico Veinte'),
+('21', '21', 'mecanico21@derrap.com', 'Mecanico', 'Mecánico Veintiuno'),
+('22', '22', 'mecanico22@derrap.com', 'Mecanico', 'Mecánico Veintidós'),
+('23', '23', 'mecanico23@derrap.com', 'Mecanico', 'Mecánico Veintitrés'),
+('24', '24', 'mecanico24@derrap.com', 'Mecanico', 'Mecánico Veinticuatro'),
+('25', '25', 'mecanico25@derrap.com', 'Mecanico', 'Mecánico Veinticinco'),
+('26', '26', 'mecanico26@derrap.com', 'Mecanico', 'Mecánico Veintiséis'),
+('27', '27', 'mecanico27@derrap.com', 'Mecanico', 'Mecánico Veintisiete'),
+('28', '28', 'mecanico28@derrap.com', 'Mecanico', 'Mecánico Veintiocho');
 
 -- Datos para la tabla `orden_reparacion`
 INSERT INTO `derrap`.`orden_reparacion` (`ID_Orden`, `fecha_entrada`, `fecha_salida`, `estado_rep`, `estado_ord`, `Vehiculos_Matricula`, `Usuarios_ID_Usuario`) VALUES
