@@ -7,6 +7,8 @@ import Estilos.estilos;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -131,14 +133,38 @@ public class paginaprincipalmec extends JFrame {
         btnStock.setBounds(10, 223, 180, 30);
         sidebar.add(btnStock);
         
+        // Crear el botón Cerrar Sesión
         JButton btnprovisional = new JButton("CERRAR SESION");
         btnprovisional.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                login login = new login();
-                login.setVisible(true);
-                dispose();
+                int confirmacion = JOptionPane.showConfirmDialog(
+                    null, 
+                    "¿Estás seguro de que quieres cerrar sesión?", 
+                    "Confirmación", 
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    login login = new login();
+                    login.setVisible(true);
+                    dispose();
+                }
+                // Si se selecciona "NO", no hace nada.
             }
         });
+
+        // Añadir el evento de teclado para Ctrl + Enter
+        InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = contentPane.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), "closeSession");
+        actionMap.put("closeSession", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	btnprovisional.doClick(); // Simula el clic en el botón "CERRAR SESION"
+            }
+        });
+
         btnprovisional.setForeground(Color.WHITE);
         btnprovisional.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnprovisional.setBackground(Color.RED);

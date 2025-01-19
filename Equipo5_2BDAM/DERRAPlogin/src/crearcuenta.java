@@ -1,12 +1,18 @@
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import Estilos.estilos;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,10 +24,13 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.JPasswordField;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 
 public class crearcuenta extends JFrame {
 	
@@ -57,115 +66,138 @@ public class crearcuenta extends JFrame {
 	 * Create the frame.
 	 */
 	public crearcuenta() {
-		setTitle("Crear Cuenta");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 750, 500);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
+        setTitle("Crear Cuenta");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 850, 550);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        contentPane.setBackground(estilos.obtenerColorFondo());
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JLabel lblCrearUnaCuenta = new JLabel("Crear una cuenta");
-		lblCrearUnaCuenta.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblCrearUnaCuenta.setBounds(61, 11, 189, 38);
+		lblCrearUnaCuenta.setFont(estilos.obtenerFuenteSubtitulo());
+		lblCrearUnaCuenta.setForeground(estilos.COLOR_TEXTO_ERROR);
+		lblCrearUnaCuenta.setBounds(36, 98, 300, 30);
 		contentPane.add(lblCrearUnaCuenta);
 		
 		JLabel lblNombre = new JLabel("Nombre");
-		lblNombre.setBounds(61, 109, 157, 14);
+		lblNombre.setFont(estilos.obtenerFuenteCampos());
+		lblNombre.setBounds(36, 154, 157, 14);
 		contentPane.add(lblNombre);
 		
 		txtNombre = new JTextField();
-		txtNombre.setBounds(61, 134, 157, 20);
+		txtNombre.setFont(estilos.obtenerFuenteCampos());
+		txtNombre.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		txtNombre.setBounds(36, 179, 175, 30);
 		contentPane.add(txtNombre);
 		txtNombre.setColumns(10);
 		
 		JLabel lblEmail = new JLabel("Email");
-		lblEmail.setBounds(61, 219, 157, 14);
+		lblEmail.setFont(estilos.obtenerFuenteCampos());
+		lblEmail.setBounds(221, 216, 157, 14);
 		contentPane.add(lblEmail);
 		
 		txtEmail = new JTextField();
-		txtEmail.setBounds(61, 244, 157, 20);
+		txtEmail.setFont(estilos.obtenerFuenteCampos());
+		txtEmail.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		txtEmail.setBounds(221, 241, 175, 30);
 		contentPane.add(txtEmail);
 		txtEmail.setColumns(10);
 		
 		JLabel lblClave = new JLabel("Contraseña");
-		lblClave.setBounds(61, 274, 157, 14);
+		lblClave.setFont(estilos.obtenerFuenteCampos());
+		lblClave.setBounds(36, 216, 157, 14);
 		contentPane.add(lblClave);
 		
 		pwClave = new JPasswordField();
-		pwClave.setBounds(61, 299, 157, 20);
+		pwClave.setFont(estilos.obtenerFuenteCampos());
+		pwClave.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		pwClave.setBounds(36, 241, 175, 30);
 		contentPane.add(pwClave);
 		
 		JLabel lblConfirmarClave = new JLabel("Confirmar contraseña");
-		lblConfirmarClave.setBounds(61, 329, 157, 14);
+		lblConfirmarClave.setFont(estilos.obtenerFuenteCampos());
+		lblConfirmarClave.setBounds(36, 282, 157, 14);
 		contentPane.add(lblConfirmarClave);
 		
 		pwConfirmarClave = new JPasswordField();
-		pwConfirmarClave.setBounds(61, 354, 157, 20);
+		pwConfirmarClave.setFont(estilos.obtenerFuenteCampos());
+		pwConfirmarClave.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		pwConfirmarClave.setBounds(36, 307, 175, 30);
 		contentPane.add(pwConfirmarClave);
 		
-		JButton btnNewButton = new JButton("Crear cuenta");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btncrearcuenta = new JButton("Crear cuenta");
+		btncrearcuenta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				crearCuenta();
 			}
 		});
-		btnNewButton.setBounds(61, 401, 157, 23);
-		contentPane.add(btnNewButton);
+		btncrearcuenta.setFont(estilos.obtenerFuenteBoton());
+		btncrearcuenta.setBackground(estilos.COLOR_BOTON_NORMAL);
+		btncrearcuenta.setForeground(Color.WHITE);
+		btncrearcuenta.setFocusPainted(false);
+		btncrearcuenta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btncrearcuenta.setBounds(221, 377, 175, 40);
+		contentPane.add(btncrearcuenta);
 		
 		JButton btnInicio = new JButton("Volver a inicio");
-	    btnInicio.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		login login = new login();
-				login.setVisible(true);
-				dispose();
-	    	}
-	    });
-	    btnInicio.setBounds(557, 401, 157, 23);
+		btnInicio.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int confirmacion = JOptionPane.showConfirmDialog(
+                    null, 
+                    "¿Estás seguro de volver a la pagina de inicio?", 
+                    "Confirmación", 
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    login login = new login();
+                    login.setVisible(true);
+                    dispose();
+                }
+                // Si se selecciona "NO", no hace nada.
+            }
+        });
+	    btnInicio.setForeground(Color.WHITE);
+	    btnInicio.setFont(new Font("Segoe UI", Font.BOLD, 14));
+	    btnInicio.setBackground(Color.RED);
+	    btnInicio.setBounds(36, 377, 175, 40);
 	    contentPane.add(btnInicio);
 		
 		JLabel lblDNI = new JLabel("DNI ");
-		lblDNI.setBounds(61, 164, 157, 14);
+		lblDNI.setFont(estilos.obtenerFuenteCampos());
+		lblDNI.setBounds(221, 154, 157, 14);
 		contentPane.add(lblDNI);
 		
 		txtDNI = new JTextField();
-		txtDNI.setBounds(61, 189, 157, 20);
+		txtDNI.setFont(estilos.obtenerFuenteCampos());
+		txtDNI.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		txtDNI.setBounds(221, 179, 175, 30);
 		contentPane.add(txtDNI);
 		txtDNI.setColumns(10);
-		
-		JLabel lblLogo1 = new JLabel("Talleres");
-		lblLogo1.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblLogo1.setBounds(612, 0, 124, 38);
-		contentPane.add(lblLogo1);
-		
-		JLabel lblLogo2 = new JLabel("Derrap");
-		lblLogo2.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblLogo2.setBounds(647, 23, 119, 38);
-		contentPane.add(lblLogo2);
-		
-		JLabel lblAdministrador = new JLabel("Administrador");
-		lblAdministrador.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 18));
-		lblAdministrador.setBounds(350, 81, 169, 20);
-		contentPane.add(lblAdministrador);
-		lblAdministrador.setVisible(false);		
-		JLabel lblInfoad = new JLabel("<html>\r\n¿Qué hace un administrador?<br>\r\n-Gestión de clientes (crear, modificar, consultar).<br>\r\n-Gestión de órdenes de reparación.<br>\r\n-Gestión de stock y proveedores.<br>\r\n-Gestión de serviciosy categorías.<br>\r\n-Control económico y generación de facturas.<br>\r\n-Reportes e historial de pagos y servicios de clientes.<br>\r\n</html>");
-		lblInfoad.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblInfoad.setBounds(342, 107, 372, 204);
-		contentPane.add(lblInfoad);
-		lblInfoad.setVisible(false);
-		JLabel lblMecanico = new JLabel("Mecánico");
-		lblMecanico.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 18));
-		lblMecanico.setBounds(350, 81, 169, 20);
-		contentPane.add(lblMecanico);
-		lblMecanico.setVisible(false);		
-		JLabel lblInfomec = new JLabel("<html>\r\n¿Qué hace un mecánico?<br>\r\n-Consultar órdenes de reparación pendientes.<br>\r\n-Historial de reparaciones de los vehículos asignados.<br>\r\n-Opción de modificación y solicitud de piezas.<br>\r\n-Consultar stock de piezas disponibles.<br>\r\n-Buscar vehículos en el sistema.<br>\r\n</html>");
-		lblInfomec.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblInfomec.setBounds(342, 107, 372, 204);
-		contentPane.add(lblInfomec);
-		lblInfomec.setVisible(false);
+        JLabel lblLogo1 = new JLabel("Talleres");
+        lblLogo1.setFont(estilos.obtenerFuenteTitulo());
+        lblLogo1.setForeground(estilos.COLOR_TEXTO_TITULO);
+        lblLogo1.setBounds(36, 36, 150, 40);
+        contentPane.add(lblLogo1);
+
+        JLabel lblLogo2 = new JLabel("Derrap");
+        lblLogo2.setFont(estilos.obtenerFuenteTitulo());
+        lblLogo2.setForeground(estilos.COLOR_TEXTO_SECUNDARIO);
+        lblLogo2.setBounds(136, 36, 150, 40);
+        contentPane.add(lblLogo2);
 		
 
+		
+
+        // Add the image to the right side
+        Image img = new ImageIcon(getClass().getResource("/Imagenes/imagenmecanico.jpg")).getImage(); // Resize the image
+        JLabel lblImage = new JLabel(new ImageIcon(img));
+        lblImage.setBounds(483, 0, 351, 511); // Position and size of the image
+        contentPane.add(lblImage);
 	}
 
 	protected void crearCuenta() {

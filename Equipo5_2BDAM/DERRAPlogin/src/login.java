@@ -137,10 +137,10 @@ public class login extends JFrame {
                         paginaprincipalmec.mostrarOrdenes();
                         dispose();
                     } else {
-                        JOptionPane.showMessageDialog(btnInicioSesion, "Tipo de usuario desconocido", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Tipo de usuario desconocido", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    JOptionPane.showMessageDialog(btnInicioSesion, "Usuario o contraseña incorrectos", "error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos", "error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

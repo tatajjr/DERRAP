@@ -3,14 +3,18 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -19,12 +23,16 @@ import Estilos.estilos;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import java.awt.SystemColor;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.InputMap;
 
 public class paginaadgestionclienteyveh extends JFrame {
 	
@@ -132,14 +140,39 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnVehiculos.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         sidebar.add(btnVehiculos);
         
+     // Crear el botón Cerrar Sesión
         JButton btnVolver = new JButton("CERRAR SESION");
         btnVolver.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		login login= new login();
-        		login.setVisible(true);
-                dispose();
-        	}
+            public void actionPerformed(ActionEvent e) {
+                int confirmacion = JOptionPane.showConfirmDialog(
+                    null, 
+                    "¿Estás seguro de que quieres cerrar sesión?", 
+                    "Confirmación", 
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirmacion == JOptionPane.YES_OPTION) {
+                    login login = new login();
+                    login.setVisible(true);
+                    dispose();
+                }
+                // Si se selecciona "NO", no hace nada.
+            }
         });
+
+        // Añadir el evento de teclado para Ctrl + Enter
+        InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = contentPane.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), "closeSession");
+        actionMap.put("closeSession", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                btnVolver.doClick(); // Simula el clic en el botón "CERRAR SESION"
+            }
+        });
+
+
         btnVolver.setBounds(10, 372, 180, 30);
         btnVolver.setFont(estilos.obtenerFuenteBoton());
         btnVolver.setBackground(Color.RED);
@@ -452,14 +485,12 @@ public class paginaadgestionclienteyveh extends JFrame {
         txtEmail.setBounds(306, 233, 200, 25);
         panel.add(txtEmail);
 
-        // Botón Crear
+     // Botón Crear
         JButton btnCrear = new JButton("CREAR");
         btnCrear.setFont(estilos.obtenerFuenteBoton());
         btnCrear.setBackground(estilos.COLOR_BOTON_NORMAL);
         btnCrear.setForeground(Color.WHITE);
         btnCrear.setFocusPainted(false);
-        //btnVehiculos.setBounds(10, 100, estilos.obtenerAnchoBoton(), estilos.obtenerAltoBoton());
-        btnCrear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnCrear.setBounds(36, 372, 180, 30);
         panel.add(btnCrear);
 
@@ -470,13 +501,35 @@ public class paginaadgestionclienteyveh extends JFrame {
             String direccion = txtDireccion.getText();
             String telefono = txtTelefono.getText();
             String email = txtEmail.getText();
+            // Validaciones
+            if (!dni.matches("\\d{8}") || dni.length() != 8) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El DNI debe tener 8 números.");
+                return;
+            }
 
-            // Llamar al método para insertar en la base de datos
+            if (nombre.isEmpty() || apellidos.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || email.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Todos los campos deben estar rellenados.");
+                return;
+            }
+
+            if (!conexion.EmailValido(email)) {
+            	JOptionPane.showMessageDialog(this, "Formato de email no correcto \n nombre@gmail.com","error",JOptionPane.ERROR_MESSAGE);
+            	return;
+            }
+
+            if (!telefono.matches("\\d{9,15}")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El formato del teléfono no es válido.");
+                return;
+            }
+
+            // Si todas las validaciones pasan, proceder con la creación del cliente
             ConexionMySql conexion = new ConexionMySql();
             boolean exito = conexion.insertarCliente(dni, nombre, apellidos, direccion, telefono, email);
 
             if (exito) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Cliente creado exitosamente.");
+                cardLayout.show(cardPanel, "CLIENTES");
+                cargarTablaClientes(); 
                 // Limpiar los campos
                 txtDni.setText("");
                 txtNombre.setText("");
@@ -488,6 +541,7 @@ public class paginaadgestionclienteyveh extends JFrame {
                 javax.swing.JOptionPane.showMessageDialog(this, "Error al crear cliente. Revisa los datos.");
             }
         });
+
 
         // Botón Volver
         JButton btnVolver = new JButton("Volver");
@@ -583,6 +637,7 @@ public class paginaadgestionclienteyveh extends JFrame {
         tableClientesact.getColumnModel().getColumn(2).setPreferredWidth(63);
         scrollClientes.setViewportView(tableClientesact);
         
+     // Botón Buscar Usuario
         JButton btnBuscarUsuario = new JButton("Buscar");
         btnBuscarUsuario.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnBuscarUsuario.setForeground(new Color(51, 51, 255)); // Blue text
@@ -591,29 +646,31 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnBuscarUsuario.setFocusPainted(false);
         btnBuscarUsuario.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnBuscarUsuario.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		ArrayList<String[]> clientes = conexion.buscarClientePorDNI(txtDni.getText());
-        		// Obtener el modelo de la tabla
-        		DefaultTableModel model = (DefaultTableModel) tableClientesact.getModel();
+            public void actionPerformed(ActionEvent e) {
+                String dni = txtDni.getText();
+                ArrayList<String[]> clientes = conexion.buscarClientePorDNI(dni);
+                DefaultTableModel model = (DefaultTableModel) tableClientesact.getModel();
+                model.setRowCount(0);
 
-        		// Limpiar cualquier dato existente en la tabla
-        		model.setRowCount(0);
+                if (clientes.isEmpty()) {
+                	javax.swing.JOptionPane.showMessageDialog(panelActualizarCliente, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
 
-        		// Recorrer el ArrayList y agregar las filas al modelo
-        		for (String[] cliente : clientes) {
-        		    model.addRow(new Object[] {
-        		        cliente[0], // Nombre
-        		        cliente[1], // Apellidos
-        		        cliente[2], // Dirección
-        		        cliente[3], // Teléfono
-        		        cliente[4]  // Email
-        		    });
-        		}
-        		
-        	}
+                } else {
+                    for (String[] cliente : clientes) {
+                        model.addRow(new Object[] {
+                            cliente[0], // Nombre
+                            cliente[1], // Apellidos
+                            cliente[2], // Dirección
+                            cliente[3], // Teléfono
+                            cliente[4]  // Email
+                        });
+                    }
+                }
+            }
         });
         btnBuscarUsuario.setBounds(248, 95, 89, 23);
         panelActualizarCliente.add(btnBuscarUsuario);
+
         
         JComboBox cbxCampos = new JComboBox();
         cbxCampos.setModel(new DefaultComboBoxModel(new String[] {"Nombre", "Apellidos", "Direccion", "Telefono", "Email"}));
@@ -646,31 +703,47 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnActualizar.addActionListener(e -> {
             String dni = txtDni.getText();
             String nuevoValor2 = txtNuevoCampoCliente.getText(); // Obtiene el nuevo valor del campo
-            System.out.println("txtNuevoCampo: " + nuevoValor2);
             String campoSeleccionado = cbxCampos.getSelectedItem().toString(); // Obtiene el campo seleccionado
 
-            if (dni.isEmpty() || nuevoValor2.isEmpty()) {
-            	System.out.println("DNI: " + txtDni.getText());
-            	System.out.println("txtNuevoCampo: " + txtNuevoCampoCliente.getText());
-                System.out.println("Por favor, rellena todos los campos.");
+            // Validaciones
+            if (!dni.matches("\\d{8}") || dni.length() != 8) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El DNI debe tener 8 números.");
+                return;
+            }
+            
+
+            if (nuevoValor2.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El nuevo valor no puede estar vacío.");
+                return;
+            }
+
+            if (campoSeleccionado.equals("Telefono") && !nuevoValor2.matches("\\d{9,15}")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El formato del teléfono no es válido.");
+                return;
+            }
+
+            if (campoSeleccionado.equals("Email") && !nuevoValor2.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El formato del email no es válido.");
+                return;
+            }
+
+            // Si todas las validaciones pasan, proceder con la actualización del cliente
+            ConexionMySql conexion = new ConexionMySql();
+            if (conexion.actualizarCliente(dni, campoSeleccionado, nuevoValor2)) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Cliente actualizado con éxito.");
+                cardLayout.show(cardPanel, "CLIENTES");
+                cargarTablaClientes(); // Actualiza la tabla
+                // Limpiar los campos
+                txtDni.setText("");
+                txtNuevoCampoCliente.setText("");
+                cbxCampos.setSelectedIndex(0);
+                DefaultTableModel model = (DefaultTableModel) tableClientesact.getModel();
+                model.setRowCount(0); // Restablecer el JComboBox al primer elemento
             } else {
-                ConexionMySql conexion = new ConexionMySql();
-                if (conexion.actualizarCliente(dni, campoSeleccionado, nuevoValor2)) { // Pasa los valores al método
-                    System.out.println("Cliente actualizado con éxito.");
-                    cardLayout.show(cardPanel, "CLIENTES");
-                    cargarTablaClientes(); // Actualiza la tabla
-                 // Limpiar los campos
-                    txtDni.setText("");
-                    txtNuevoCampoCliente.setText("");
-                    cbxCampos.setSelectedIndex(0);
-                    DefaultTableModel model = (DefaultTableModel) tableClientesact.getModel();
-                    model.setRowCount(0);// Restablecer el JComboBox al primer elemento
-                    
-                } else {
-                    System.out.println("Error al actualizar el cliente.");
-                }
+                javax.swing.JOptionPane.showMessageDialog(this, "Error al actualizar el cliente.");
             }
         });
+
 
         return panelActualizarCliente;
     }
@@ -741,14 +814,12 @@ public class paginaadgestionclienteyveh extends JFrame {
         txtEmail.setBounds(306, 173, 200, 25);
         panel.add(txtEmail);
 
-        // Botón Crear
+     // Botón Crear
         JButton btnCrear = new JButton("CREAR");
         btnCrear.setFont(estilos.obtenerFuenteBoton());
         btnCrear.setBackground(estilos.COLOR_BOTON_NORMAL);
         btnCrear.setForeground(Color.WHITE);
         btnCrear.setFocusPainted(false);
-        //btnVehiculos.setBounds(10, 100, estilos.obtenerAnchoBoton(), estilos.obtenerAltoBoton());
-        btnCrear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnCrear.setBounds(36, 372, 180, 30);
         panel.add(btnCrear);
 
@@ -757,24 +828,46 @@ public class paginaadgestionclienteyveh extends JFrame {
             String nombre = txtNombre.getText();
             String clave = txtClave.getText();
             String email = txtEmail.getText();
-            
-            
-            // Llamar al método para insertar en la base de datos
+
+            // Validaciones
+            if (!dni.matches("\\d{8}") || dni.length() != 8) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El DNI debe tener 8 números.");
+                return;
+            }
+
+            if (nombre.isEmpty() || clave.isEmpty() || email.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Todos los campos deben estar rellenados.");
+                return;
+            }
+
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El formato del email no es válido.");
+                return;
+            }
+
+            if(!conexion.DNIValido(dni)) {
+            	JOptionPane.showMessageDialog(this,"El formato de DNI no es correcto. ej:12345678A","error", JOptionPane.ERROR_MESSAGE);
+            	return;
+            }
+
+            // Si todas las validaciones pasan, proceder con la creación del mecánico
             ConexionMySql conexion = new ConexionMySql();
             boolean exito = conexion.insertarMecanico(dni, nombre, clave, email);
 
             if (exito) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Cliente creado exitosamente.");
+                javax.swing.JOptionPane.showMessageDialog(this, "Mecánico creado exitosamente.");
+                cardLayout.show(cardPanel, "MECÁNICOS");
+                cargarTablaMecanicos(); 
                 // Limpiar los campos
                 txtDni.setText("");
                 txtNombre.setText("");
                 txtClave.setText("");
                 txtEmail.setText("");
-
             } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al crear cliente. Revisa los datos.");
+                javax.swing.JOptionPane.showMessageDialog(this, "Error al crear mecánico. Revisa los datos.");
             }
         });
+
 
         // Botón Volver
         JButton btnVolver = new JButton("Volver");
@@ -795,8 +888,8 @@ public class paginaadgestionclienteyveh extends JFrame {
             txtClave.setText("");
             txtEmail.setText("");;
 
-            // Cambiar al panel "CLIENTES"
-            cardLayout.show(cardPanel, "CLIENTES");
+            // Cambiar al panel "Mecanicos"
+            cardLayout.show(cardPanel, "MECÁNICOS");
         });
 
         return panel;
@@ -876,26 +969,27 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnBuscarUsuario.setBorderPainted(false);
         btnBuscarUsuario.setFocusPainted(false);
         btnBuscarUsuario.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
         btnBuscarUsuario.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		ArrayList<String[]> mecanicos = conexion.buscarMecanicoPorDNI(txtDNI.getText());
-        		// Obtener el modelo de la tabla
-        		DefaultTableModel model = (DefaultTableModel) tableMecanicosact.getModel();
+                String dni = txtDNI.getText();
+                ArrayList<String[]> mecanicos = conexion.buscarMecanicoPorDNI(dni);
+                DefaultTableModel model = (DefaultTableModel) tableMecanicosact.getModel();
+                model.setRowCount(0);
 
-        		// Limpiar cualquier dato existente en la tabla
-        		model.setRowCount(0);
+                if (mecanicos.isEmpty()) {
+                	javax.swing.JOptionPane.showMessageDialog(panelActualizarMecanico, "Usuario no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
 
-        		// Recorrer el ArrayList y agregar las filas al modelo
-        		for (String[] mecanico : mecanicos) {
-        		    model.addRow(new Object[] {
-        		    		mecanico[0], // Clave
-        		    		mecanico[1], // Nombre
-        		    		mecanico[2], // Email
-  
-        		    });
-        		}
-        		
-        	}
+                } else {
+                	for (String[] mecanico : mecanicos) {
+            		    model.addRow(new Object[] {
+            		    		mecanico[0], // Clave
+            		    		mecanico[1], // Nombre
+            		    		mecanico[2], // Email
+                        });
+                    }
+                }
+            }
         });
         btnBuscarUsuario.setBounds(248, 95, 89, 23);
         panelActualizarMecanico.add(btnBuscarUsuario);
@@ -927,32 +1021,50 @@ public class paginaadgestionclienteyveh extends JFrame {
             cardLayout.show(cardPanel, "MECÁNICOS");
         });
 
-        // Acción del botón Actualizar
+     // Acción del botón Actualizar
         btnActualizar.addActionListener(e -> {
             String dni = txtDNI.getText();
             String nuevoValor = txtNuevoCampoMecanico.getText(); // Obtiene el nuevo valor del campo
             String campoSeleccionado = cbxCampos.getSelectedItem().toString(); // Obtiene el campo seleccionado
 
+            // Validaciones
+            if (!dni.matches("\\d{8}") || dni.length() != 8) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El DNI debe tener 8 números.");
+                return;
+            }
+
             if (dni.isEmpty() || nuevoValor.isEmpty()) {
-                System.out.println("Por favor, rellena todos los campos.");
+                javax.swing.JOptionPane.showMessageDialog(this, "Todos los campos deben estar rellenados.");
+                return;
+            }
+
+            if (campoSeleccionado.equals("Clave") && !conexion.DNIValido(nuevoValor)) {
+            	JOptionPane.showMessageDialog(this,"El formato de DNI no es correcto. ej:12345678A","error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (campoSeleccionado.equals("Email") && !nuevoValor.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El formato del email no es válido.");
+                return;
+            }
+
+            // Si todas las validaciones pasan, proceder con la actualización del mecánico
+            ConexionMySql conexion = new ConexionMySql();
+            if (conexion.actualizarMecanico(dni, campoSeleccionado, nuevoValor)) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Mecánico actualizado con éxito.");
+                cardLayout.show(cardPanel, "MECÁNICOS");
+                cargarTablaMecanicos(); // Actualiza la tabla
+                // Limpiar los campos
+                txtDNI.setText("");
+                txtNuevoCampoMecanico.setText("");
+                cbxCampos.setSelectedIndex(0);
+                DefaultTableModel model = (DefaultTableModel) tableMecanicosact.getModel();
+                model.setRowCount(0); // Restablecer el JComboBox al primer elemento
             } else {
-            	ConexionMySql conexion = new ConexionMySql();
-                if (conexion.actualizarMecanico(dni, campoSeleccionado, nuevoValor)) { // Pasa los valores al método
-                    System.out.println("Mecanico actualizado con éxito.");
-                    cardLayout.show(cardPanel, "MECÁNICOS");
-                    cargarTablaMecanicos(); // Actualiza la tabla
-                 // Limpiar los campos
-                    txtDNI.setText("");
-                    txtNuevoCampoMecanico.setText("");
-                    cbxCampos.setSelectedIndex(0);
-                    DefaultTableModel model = (DefaultTableModel) tableClientesact.getModel();
-                    model.setRowCount(0);// Restablecer el JComboBox al primer elemento
-                    
-                } else {
-                    System.out.println("Error al actualizar el cliente.");
-                }
+                javax.swing.JOptionPane.showMessageDialog(this, "Error al actualizar el mecánico.");
             }
         });
+
 
         return panelActualizarMecanico;
     }
@@ -1099,7 +1211,7 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnCrear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnCrear.setBounds(36, 372, 180, 30);
         panel.add(btnCrear);
-
+        
         btnCrear.addActionListener(e -> {
             String matricula = txtMatricula.getText();
             String modelo = txtModelo.getText();
@@ -1107,14 +1219,43 @@ public class paginaadgestionclienteyveh extends JFrame {
             String anio = txtAnio.getText();
             String kmtotales = txtKmTotales.getText();
             String dnicliente = txtDniCliente.getText();
-            
-            
-            // Llamar al método para insertar en la base de datos
+
+         // Validaciones
+            if (!matricula.matches("^[0-9]{4}[A-Za-z]{3}$")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "La matrícula debe tener 4 números seguidos de 3 letras.");
+                return;
+            }
+
+            if (!anio.matches("\\d{4}")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El año debe tener 4 dígitos.");
+                return;
+            }
+
+            if (!dnicliente.matches("\\d{8}") || dnicliente.length() != 8) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El DNI del cliente debe tener 8 números.");
+                return;
+            }
+
+            if (!kmtotales.matches("\\d+")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Los kilómetros totales deben ser un número entero.");
+                return;
+            }
+
+            // Validar que todos los campos estén completos
+            if (matricula.isEmpty() || modelo.isEmpty() || marca.isEmpty() || anio.isEmpty() || kmtotales.isEmpty() || dnicliente.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Todos los campos deben estar completos.");
+                return;
+            }
+
+            // Si todas las validaciones pasan, proceder con la creación del vehículo
             ConexionMySql conexion = new ConexionMySql();
             boolean exito = conexion.insertarVehiculo(matricula, modelo, marca, anio, kmtotales, dnicliente);
 
             if (exito) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Cliente creado exitosamente.");
+                javax.swing.JOptionPane.showMessageDialog(this, "Vehículo creado exitosamente.");
+            	cardLayout.show(cardPanel, "VEHÍCULOS");
+                cargarTablaVehiculos(); // Actualiza la tabla
+                
                 // Limpiar los campos
                 txtMatricula.setText("");
                 txtModelo.setText("");
@@ -1122,11 +1263,12 @@ public class paginaadgestionclienteyveh extends JFrame {
                 txtAnio.setText("");
                 txtKmTotales.setText("");
                 txtDniCliente.setText("");
-
             } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al crear cliente. Revisa los datos.");
+                javax.swing.JOptionPane.showMessageDialog(this, "Error al crear vehículo. Revisa los datos.");
             }
+
         });
+
 
         // Botón Volver
         JButton btnVolver = new JButton("Volver");
@@ -1230,28 +1372,30 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnBuscarVehiculo.setBorderPainted(false);
         btnBuscarVehiculo.setFocusPainted(false);
         btnBuscarVehiculo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
         btnBuscarVehiculo.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		ArrayList<String[]> vehiculos = conexion.buscarVehiculoPorMatricula(txtMatricula.getText());
-        		// Obtener el modelo de la tabla
-        		DefaultTableModel model = (DefaultTableModel) tableVehiculosact.getModel();
+                String matricula = txtMatricula.getText();
+                ArrayList<String[]> vehiculos = conexion.buscarVehiculoPorMatricula(matricula);
+                DefaultTableModel model = (DefaultTableModel) tableVehiculosact.getModel();
+                model.setRowCount(0);
 
-        		// Limpiar cualquier dato existente en la tabla
-        		model.setRowCount(0);
+                if (vehiculos.isEmpty()) {
+                	javax.swing.JOptionPane.showMessageDialog(panelActualizarVehiculo, "Matricula no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
 
-        		// Recorrer el ArrayList y agregar las filas al modelo
-        		for (String[] vehiculo : vehiculos) {
-        		    model.addRow(new Object[] {
-        		    		vehiculo[0], // Clave
-        		    		vehiculo[1], // Nombre
-        		    		vehiculo[2],
-        		    		vehiculo[3],
-        		    		vehiculo[4],// Email
-  
-        		    });
-        		}
-        		
-        	}
+                } else {
+                	for (String[] vehiculo : vehiculos) {
+            		    model.addRow(new Object[] {
+            		    		vehiculo[0], // Clave
+            		    		vehiculo[1], // Nombre
+            		    		vehiculo[2],
+            		    		vehiculo[3],
+            		    		vehiculo[4],// Email
+      
+            		    });
+            		}
+                }
+            }
         });
         btnBuscarVehiculo.setBounds(248, 95, 89, 23);
         panelActualizarVehiculo.add(btnBuscarVehiculo);
@@ -1284,32 +1428,79 @@ public class paginaadgestionclienteyveh extends JFrame {
         });
 
         // Acción del botón Actualizar
+     // Acción del botón Actualizar
         btnActualizar.addActionListener(e -> {
             String matricula = txtMatricula.getText();
             String nuevoValor = txtNuevoCampoVehiculo.getText(); // Obtiene el nuevo valor del campo
             String campoSeleccionado = cbxCampos.getSelectedItem().toString(); // Obtiene el campo seleccionado
 
-            if (matricula.isEmpty() || nuevoValor.isEmpty()) {
-                System.out.println("Por favor, rellena todos los campos.");
+            // Validaciones
+            if (!matricula.matches("^[0-9]{4}[A-Za-z]{3}$")) {
+                javax.swing.JOptionPane.showMessageDialog(this, "La matrícula debe tener 4 números seguidos de 3 letras.");
+                return;
+            }
+
+            if (nuevoValor.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "El nuevo valor no puede estar vacío.");
+                return;
+            }
+
+            switch (campoSeleccionado) {
+                case "Modelo":
+                case "Marca":
+                case "Anio":
+                case "Km Totales":
+                case "DNI Cliente":
+                    break;
+                default:
+                    javax.swing.JOptionPane.showMessageDialog(this, "Campo seleccionado no válido.");
+                    return;
+            }
+
+            switch (campoSeleccionado) {
+                case "Modelo":
+                case "Marca":
+                    if (!nuevoValor.matches("^[A-Za-z]+$")) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "El valor debe contener solo letras.");
+                        return;
+                    }
+                    break;
+                case "Anio":
+                    if (!nuevoValor.matches("\\d{4}")) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "El año debe tener 4 dígitos.");
+                        return;
+                    }
+                    break;
+                case "Km Totales":
+                    if (!nuevoValor.matches("\\d+")) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Los kilómetros totales deben ser un número entero.");
+                        return;
+                    }
+                    break;
+                case "DNI Cliente":
+                    if (!nuevoValor.matches("\\d{8}") || nuevoValor.length() != 8) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "El DNI del cliente debe tener 8 números.");
+                        return;
+                    }
+                    break;
+            }
+
+            ConexionMySql conexion = new ConexionMySql();
+            if (conexion.actualizarVehiculo(matricula, campoSeleccionado, nuevoValor)) { // Pasa los valores al método
+                javax.swing.JOptionPane.showMessageDialog(this, "Vehículo actualizado con éxito.");
+                cardLayout.show(cardPanel, "VEHÍCULOS");
+                cargarTablaVehiculos(); // Actualiza la tabla
+                // Limpiar los campos
+                txtMatricula.setText("");
+                txtNuevoCampoVehiculo.setText("");
+                cbxCampos.setSelectedIndex(0);
+                DefaultTableModel model = (DefaultTableModel) tableVehiculosact.getModel();
+                model.setRowCount(0); // Restablecer el JComboBox al primer elemento
             } else {
-            	ConexionMySql conexion = new ConexionMySql();
-                if (conexion.actualizarVehiculo(matricula, campoSeleccionado, nuevoValor)) { // Pasa los valores al método
-                    System.out.println("Vehiculo actualizado con éxito.");
-                    cardLayout.show(cardPanel, "VEHÍCULOS");
-                    cargarTablaVehiculos(); // Actualiza la tabla
-                 // Limpiar los campos
-                    txtMatricula.setText("");
-                    txtNuevoCampoVehiculo.setText("");
-                    cbxCampos.setSelectedIndex(0);
-                    DefaultTableModel model = (DefaultTableModel) tableVehiculosact.getModel();
-                    model.setRowCount(0);// Restablecer el JComboBox al primer elemento
-                    
-                    
-                } else {
-                    System.out.println("Error al actualizar el vehiculo.");
-                }
+                javax.swing.JOptionPane.showMessageDialog(this, "Error al actualizar el vehículo.");
             }
         });
+
 
         return panelActualizarVehiculo;
     }
@@ -1365,24 +1556,26 @@ public class paginaadgestionclienteyveh extends JFrame {
         btnBuscarVehiculo.setFocusPainted(false);
         btnBuscarVehiculo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnBuscarVehiculo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        	public void actionPerformed(ActionEvent e) {
                 String matricula = txtMatricula.getText();
                 ArrayList<String[]> vehiculos = conexion.buscarVehiculoPorMatricula2(matricula);
-                // Obtener el modelo de la tabla
                 DefaultTableModel model = (DefaultTableModel) tableVehiculos2.getModel();
-
-                // Limpiar cualquier dato existente en la tabla
                 model.setRowCount(0);
 
-                // Recorrer el ArrayList y agregar las filas al modelo
-                for (String[] vehiculo : vehiculos) {
-                    model.addRow(new Object[] {
-                        vehiculo[0], // Marca
-                        vehiculo[1], // Matrícula
-                        vehiculo[2], // Modelo
-                        vehiculo[3], // Año
-                        vehiculo[4]// Kilómetros
-                    });
+                if (vehiculos.isEmpty()) {
+                	javax.swing.JOptionPane.showMessageDialog(panelEliminarVehiculo, "Matricula no encontrada", "Error", JOptionPane.ERROR_MESSAGE);
+
+                } else {
+                	for (String[] vehiculo : vehiculos) {
+            		    model.addRow(new Object[] {
+            		    		vehiculo[0], // Clave
+            		    		vehiculo[1], // Nombre
+            		    		vehiculo[2],
+            		    		vehiculo[3],
+            		    		vehiculo[4],// Email
+      
+            		    });
+            		}
                 }
             }
         });
@@ -1413,6 +1606,7 @@ public class paginaadgestionclienteyveh extends JFrame {
                 ConexionMySql conexion = new ConexionMySql();
                 if (conexion.eliminarVehiculo(matricula)) { // Elimina el vehículo usando la matrícula
                 	javax.swing.JOptionPane.showMessageDialog(this, "Vehículo eliminado exitosamente.");
+                	cardLayout.show(cardPanel, "VEHÍCULOS");
                     cargarTablaVehiculos(); // Actualiza la tabla
                     // Limpiar los campos
                     txtMatricula.setText("");
